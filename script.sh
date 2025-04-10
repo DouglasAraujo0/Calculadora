@@ -1,6 +1,6 @@
 #!/bin/bash
 
-projeto="/opt/dev/projects/projetosEvidencia/projetoCalculadora"
+projeto="/opt/dev/workspace/projetosPontos/Calculadora"
 nginx="/var/www/html"
 
 if [ -d "$projeto" ] && [ -d "$nginx" ]; then

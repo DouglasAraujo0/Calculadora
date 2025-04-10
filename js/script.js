@@ -1,24 +1,35 @@
 const resultado = document.querySelector(".resultado");
 const botoes = document.querySelectorAll("button");
-let expressao = "";
 
 function resetarBotao() {
-    resultado.textContent = "";
+    resultado.textContent = "0";
 }
 
 function ApagarUmCaracterBotao() { 
-    let novaExpressao = "";
-    for (let index = 0; index < expressao.length - 1; index++) {
-        novaExpressao[index] += expressao[index];   
+    let textoAtual = resultado.innerHTML;
+    let novoTexto = "";
+    for (let index = 0; index < textoAtual.length - 1; index++) {
+        novoTexto += textoAtual[index];   
     }
-    expressao = novaExpressao;
+    resultado.innerHTML = novoTexto || "0";
 }
-
 
 botoes.forEach((botao) => {
     botao.addEventListener("click", () => {
         const valor = botao.textContent;
-        console.log("gay" + valor);
+        if (valor == "C") {
+            resetarBotao()
+            return;
+        } else if (valor == "CE") {
+            ApagarUmCaracterBotao();
+        }
+        if (resultado.innerHTML == "0") {
+            resultado.innerHTML = valor;
+        } else {
+            resultado.innerHTML += valor
+        }
     })
 });
+
+
 
