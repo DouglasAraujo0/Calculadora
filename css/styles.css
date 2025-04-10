@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 
+:root {
+    --cinza: #585858;
+    --cinzaClaro: #747474;
+    --laranja: #f2a43b;
+}
+
 body{
     display: flex;
     align-items: center;
@@ -53,11 +59,11 @@ body{
 }
 
 .botaoCinza {
-    background-color: #585858;
+    background-color: var(--cinza);
 }
 
 .botaoCinzaClaro {
-    background-color: #747474;
+    background-color: var(--cinzaClaro);
 }
 
 button:active {
@@ -65,5 +71,5 @@ button:active {
 }
 
 .botaoCalculoLaranja {
-    background-color:#f2a43b;
+    background-color: var(--laranja);
 }
