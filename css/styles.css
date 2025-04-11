@@ -56,8 +56,8 @@ body{
     outline: none;
 }   
 
-.botaoZero {
-    grid-column: span 2;
+.botaoIgual {
+    grid-column: span 4;
 }
 
 .botaoCinza {

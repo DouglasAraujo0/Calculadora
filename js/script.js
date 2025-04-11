@@ -1,7 +1,7 @@
 const resultado = document.getElementById("idResultado");
 const botoes = document.querySelectorAll("button");
 
-let operadoresDisponiveis = ["+","-","*","÷"];
+let operadoresDisponiveis = ["+","-","*","÷", "%", "^", "√"];
 let operador = "";
 let expressao = "";
 let parte1 = "";
@@ -9,6 +9,9 @@ let parte2 = "";
 
 function resetarBotao() {
     resultado.value = "0";
+    operador = "";
+    parte1 = "";
+    parte2 = "";
 }
 
 function apagarUmCaracterBotao() { 
@@ -18,6 +21,10 @@ function apagarUmCaracterBotao() {
         novoTexto += textoAtual[index];   
     }
     resultado.value = novoTexto || "0";
+
+    if (!resultado.value.includes(operador)) {
+        operador = "";
+    }
 }
 
 botoes.forEach((botao) => {
@@ -33,32 +40,69 @@ botoes.forEach((botao) => {
             return;
         }
 
+        if (valor == ".") {
+            const partes = resultado.value.split(operador || "");
+            const ultimaParte = partes[partes.length - 1];
+            if (ultimaParte.includes(".")) {
+            return;
+            }
+        }
+
         if (valor == "=") {
-            const partes = resultado.value.split(operador);
-            parte1 = partes[0];
-            parte2 = partes[1];
+            if(!operador) {
+                return;
+            }
+
+            if (operador == "√") {
+                parte1 = resultado.value.replace("√", "")
+                if (parte1 == "") {
+                    return;
+                }
+                parte2 = "";
+            } else {
+                const partes = resultado.value.split(operador);
+                parte1 = partes[0];
+                parte2 = partes[1];
+                
+                if (parte1 == "" || parte2 == "") {
+                    return;
+                }       
+            }
             calcular();
             return;
         }
 
-        if (operadoresDisponiveis.includes(valor) && operador == "") {
+        if (operadoresDisponiveis.includes(valor)) {
+            for (let temOperador of operadoresDisponiveis) {
+                if (resultado.value.includes(temOperador)) {
+                    return;
+                }
+            }
+            
+        operador = valor;
+
+        if (valor == "√") {
             operador = valor;
-            resultado.value += valor;
+        
+            if (resultado.value === "0") {
+                resultado.value = "√";
+            } else {
+                resultado.value = "√" + resultado.value;
+            }
             return;
         }
+        
+    }
 
         if (resultado.value == "0") {
             resultado.value = valor
         } else {
             resultado.value += valor
         }
-        
     })
 });
 
-
 function calcular() {
-
     let resultadoFinal = 0;
     let numero1 = parseFloat(parte1);
     let numero2 = parseFloat(parte2);
@@ -77,21 +121,81 @@ function calcular() {
             break;
         }
         case "÷": {
+            if (numero2 == 0) {
+                resultado.value = "ERRO"
+                operador = "";
+                return;
+            }
             resultadoFinal = numero1 / numero2;
             break;
         }
         case "%": {
-            resultadoFinal = numero1 + numero2;
+            resultadoFinal = ((numero1 * numero2) / 100);
+            break;
+        }
+        case "^": {
+            resultadoFinal = numero1 ** numero2;
+            break;
+        }
+        case "√": {
+            if (numero1 < 0) {
+                resultado.value = "ERRO";
+                operador = "";
+                return;
+            }
+            resultadoFinal = Math.sqrt(numero1)  
             break;
         }
     }
-    resultado.value = resultadoFinal;
+    resultado.value = parseFloat(resultadoFinal.toFixed(5)).toString();
     operador = '';
-    numero1 = '';
-    numero2 = '';
+    parte1 = '';
+    parte2 = '';
 }
 
+document.addEventListener("keydown", (evento) => {
+    const tecla = evento.key;
 
+    botoes.forEach((botao) => {
+        const valorBotao = botao.textContent;
+
+        if (valorBotao === tecla) {
+            botao.click();
+        }
+    });
+
+    function selecionarTecla(classe) {
+        const botao = document.querySelector(classe);
+        if (botao) {
+            botao.click();
+        }
+    }
+
+    if (tecla == "Enter") {
+        selecionarTecla(".botaoIgual");
+    }
+
+    if (tecla == "Backspace") {
+        selecionarTecla(".botaoApagaUm");
+    }
+
+    if (tecla == "r" || tecla == "R") {
+        selecionarTecla(".botaoRaiz");
+
+    }
+
+    if (tecla == " ") {
+        selecionarTecla(".botaoApagaTudo");
+    }
+
+    if (tecla == "p" || tecla == "P") {
+        selecionarTecla(".botaoPotencia");
+    }
+
+    if (tecla == "d" || tecla == "D") {
+        selecionarTecla(".botaoDivisao");
+    }
+})
 
 
 
