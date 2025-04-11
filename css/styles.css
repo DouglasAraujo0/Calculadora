@@ -1,0 +1,77 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --cinza: #585858;
+    --cinzaClaro: #747474;
+    --laranja: #f2a43b;
+}
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #F7F7F7;
+}
+
+.containerCalculadora {
+    width: 300px;
+    background-color: #464646;
+    border-radius: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 00px 4px 25px #000;
+    overflow: hidden;
+}
+
+.resultado {
+    text-align: right;
+    padding: 20px;
+    width: 41vh;
+    color: #FFF;
+    font-size: 50px;
+    background-color: #464646;
+}
+
+.botoes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+}
+
+.botoes button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 100%;
+    color: #FFFFFF;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}   
+
+.botaoIgual {
+    grid-column: span 4;
+}
+
+.botaoCinza {
+    background-color: var(--cinza);
+}
+
+.botaoCinzaClaro {
+    background-color: var(--cinzaClaro);
+}
+
+button:active {
+    opacity: .8;
+}
+
+.botaoCalculoLaranja {
+    background-color: var(--laranja);
+}
