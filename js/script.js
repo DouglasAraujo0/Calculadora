@@ -35,6 +35,7 @@ function calcularFatorial(numero) {
     }
     return fatorial;
 }
+
 botoes.forEach((botao) => {
     botao.addEventListener("click", () => {
         const valor = botao.textContent;
@@ -61,7 +62,7 @@ botoes.forEach((botao) => {
                 return;
             }
 
-            if (operador == "√"  || operador == "!" || operador == "sin") {
+            if (["√", "!", "sin", "cos", "tan"].includes(operador)) {
                 parte1 = resultado.value.replace(operador, "")
                 if (parte1 == "") {
                     return;
@@ -110,6 +111,29 @@ botoes.forEach((botao) => {
             };
             return;
         }
+
+        if (valor == "cos") {
+            operador = "cos";
+        
+            if (resultado.value == "0") {
+                resultado.value = "cos";
+            } else {
+                resultado.value = "cos" + resultado.value;
+            }
+            return;
+        }
+        
+        if (valor == "tan") {
+            operador = "tan";
+        
+            if (resultado.value == "0") {
+                resultado.value = "tan";
+            } else {
+                resultado.value = "tan" + resultado.value;
+            }
+            return;
+        }
+        
         
     }
         if (resultado.value == "0") {
@@ -192,20 +216,20 @@ function calcular() {
     parte2 = '';
 }
 
-
-
 document.addEventListener("keydown", (evento) => {
     const tecla = evento.key;
     botoes.forEach((botao) => {
         const valorBotao = botao.textContent;
         if (valorBotao === tecla) {
             botao.click();
-            botao.classList.add("pressionado")
+            botao.classList.add("pressionado");
+    
+            setTimeout(() => {
+                botao.classList.remove("pressionado"); 
+            }, 150);
         }
-        setTimeout(() => {
-            botao.classList.remove("pressionado"); 
-        }, 150);
     });
+    
 
     const teclasMapeadas = {
         "Enter": ".botaoIgual",
@@ -243,7 +267,3 @@ document.addEventListener("keydown", (evento) => {
         evento.preventDefault();
     }
 });
-
-
-
-
