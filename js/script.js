@@ -1,7 +1,7 @@
 const resultado = document.getElementById("idResultado");
 const botoes = document.querySelectorAll("button");
 
-let operadoresDisponiveis = ["+","-","*","÷", "%", "^", "√", "!"];
+let operadoresDisponiveis = ["+","-","*","÷", "%", "^", "√", "!", "sin", "cos", "tan"];
 let operador = "";
 let parte1 = "";
 let parte2 = "";
@@ -15,7 +15,6 @@ function resetarBotao() {
 
 function apagarUmCaracterBotao() { 
     resultado.value = resultado.value.slice(0, -1) || "0";
-    resultado.value = novoTexto || "0";
 
     if (!resultado.value.includes(operador)) {
         operador = "";
@@ -23,16 +22,16 @@ function apagarUmCaracterBotao() {
 }
 
 function calcularFatorial(numero) {
-    if (numero < 0) {
+    if (numero < 0 || !Number.isInteger(numero)) {
         return "ERRO";
     }
-    if (numero == 0 || numero == 1) {
+    if (numero === 0 || numero === 1) {
         return 1;
     }
 
     let fatorial = 1;
-    for (let index = 2; index <= numero; index++) {
-        fatorial *= index;
+    for (let i = 2; i <= numero; i++) {
+        fatorial *= i;
     }
     return fatorial;
 }
@@ -62,7 +61,7 @@ botoes.forEach((botao) => {
                 return;
             }
 
-            if (operador == "√"  || operador == "!") {
+            if (operador == "√"  || operador == "!" || operador == "sin") {
                 parte1 = resultado.value.replace(operador, "")
                 if (parte1 == "") {
                     return;
@@ -100,9 +99,19 @@ botoes.forEach((botao) => {
             }
             return;
         }
+
+        if (valor == "sin") {
+            operador = "sin";
+            
+            if(resultado.value == "0") {
+                resultado.value = "sin";
+            } else {
+                resultado.value = "sin" + resultado.value; 
+            };
+            return;
+        }
         
     }
-
         if (resultado.value == "0") {
             resultado.value = valor 
         } else {
@@ -163,7 +172,19 @@ function calcular() {
             }
             resultadoFinal = calcularFatorial(numero1);
             break;
-        }
+        };
+        case "sin": {
+            resultadoFinal = Math.sin(numero1);
+            break;
+        };
+        case "cos": {
+            resultadoFinal = Math.cos(numero1);
+            break;
+        };
+        case "tan": {
+            resultadoFinal = Math.tan(numero1);
+            break;
+        };
     }
     resultado.value = parseFloat(resultadoFinal.toFixed(5)).toString();
     operador = '';
@@ -173,15 +194,12 @@ function calcular() {
 
 document.addEventListener("keydown", (evento) => {
     const tecla = evento.key;
-
     botoes.forEach((botao) => {
         const valorBotao = botao.textContent;
-
         if (valorBotao === tecla) {
             botao.click();
             botao.classList.add("pressionado")
         }
-
         setTimeout(() => {
             botao.classList.remove("pressionado"); 
         }, 150);
@@ -193,11 +211,9 @@ document.addEventListener("keydown", (evento) => {
             botao.click();
             botao.classList.add("pressionado")
         }
-
         setTimeout(() => {
             botao.classList.remove("pressionado"); 
         }, 150);
-
         evento.preventDefault();
     }
 
@@ -211,12 +227,10 @@ document.addEventListener("keydown", (evento) => {
 
     if (tecla == "r" || tecla == "R") {
         selecionarTecla(".botaoRaiz");
-
     }
 
     if (tecla == " ") {
         selecionarTecla(".botaoApagaTudo");
-        
     }
 
     if (tecla == "p" || tecla == "P") {
@@ -229,7 +243,18 @@ document.addEventListener("keydown", (evento) => {
     if (tecla == "f" || tecla == "F") {
         selecionarTecla(".botaoFatorial")
     } 
-})
+    if (tecla == "s" || tecla == "S") {
+        selecionarTecla(".botaoSeno")
+    } 
+    if (tecla == "c" || tecla == "C") {
+        selecionarTecla(".botaoCosseno")
+    } 
+    if (tecla == "t" || tecla == "T") {
+        selecionarTecla(".botaoTangente")
+    } 
+
+});
+
 
 
 
