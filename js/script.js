@@ -1,7 +1,7 @@
 const resultado = document.getElementById("idResultado");
 const botoes = document.querySelectorAll("button");
 
-let operadoresDisponiveis = ["+","-","*","÷", "%", "^", "√"];
+let operadoresDisponiveis = ["+","-","*","÷", "%", "^", "√", "!"];
 let operador = "";
 let parte1 = "";
 let parte2 = "";
@@ -14,11 +14,7 @@ function resetarBotao() {
 }
 
 function apagarUmCaracterBotao() { 
-    let textoAtual = resultado.value;
-    let novoTexto = "";
-    for (let index = 0; index < textoAtual.length - 1; index++) {
-        novoTexto += textoAtual[index];   
-    }
+    resultado.value = resultado.value.slice(0, -1) || "0";
     resultado.value = novoTexto || "0";
 
     if (!resultado.value.includes(operador)) {
@@ -26,6 +22,20 @@ function apagarUmCaracterBotao() {
     }
 }
 
+function calcularFatorial(numero) {
+    if (numero < 0) {
+        return "ERRO";
+    }
+    if (numero == 0 || numero == 1) {
+        return 1;
+    }
+
+    let fatorial = 1;
+    for (let index = 2; index <= numero; index++) {
+        fatorial *= index;
+    }
+    return fatorial;
+}
 botoes.forEach((botao) => {
     botao.addEventListener("click", () => {
         const valor = botao.textContent;
@@ -52,8 +62,8 @@ botoes.forEach((botao) => {
                 return;
             }
 
-            if (operador == "√") {
-                parte1 = resultado.value.replace("√", "")
+            if (operador == "√"  || operador == "!") {
+                parte1 = resultado.value.replace(operador, "")
                 if (parte1 == "") {
                     return;
                 }
@@ -145,6 +155,15 @@ function calcular() {
             resultadoFinal = Math.sqrt(numero1)  
             break;
         }
+        case "!": {
+            if (numero1 < 0 || !Number.isInteger(numero1)) {
+                resultado.value = "ERRO";
+                operador = "";
+                return;
+            }
+            resultadoFinal = calcularFatorial(numero1);
+            break;
+        }
     }
     resultado.value = parseFloat(resultadoFinal.toFixed(5)).toString();
     operador = '';
@@ -178,6 +197,8 @@ document.addEventListener("keydown", (evento) => {
         setTimeout(() => {
             botao.classList.remove("pressionado"); 
         }, 150);
+
+        evento.preventDefault();
     }
 
     if (tecla == "Enter") {
@@ -195,6 +216,7 @@ document.addEventListener("keydown", (evento) => {
 
     if (tecla == " ") {
         selecionarTecla(".botaoApagaTudo");
+        
     }
 
     if (tecla == "p" || tecla == "P") {
@@ -204,6 +226,9 @@ document.addEventListener("keydown", (evento) => {
     if (tecla == "d" || tecla == "D") {
         selecionarTecla(".botaoDivisao");
     }
+    if (tecla == "f" || tecla == "F") {
+        selecionarTecla(".botaoFatorial")
+    } 
 })
 
 
