@@ -1,0 +1,16 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #F7F7F7;
+}
+
+.containerCalculadora {
+    width: 300px;
+    background-color: #464646;
+    border-radius: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 00px 4px 25px #000;
+    overflow: hidden;
+}
