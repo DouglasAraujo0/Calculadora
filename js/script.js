@@ -1,7 +1,7 @@
 const resultado = document.getElementById("idResultado");
 const botoes = document.querySelectorAll("button");
 
-let operadoresDisponiveis = ["+","-","*","÷", "%", "^", "√", "!", "sin", "cos", "tan"];
+let operadoresDisponiveis = ["+", "-", "*", "÷", "%", "^", "√", "!", "sin", "cos", "tan"];
 let operador = "";
 let parte1 = "";
 let parte2 = "";
@@ -15,7 +15,6 @@ function resetarBotao() {
 
 function apagarUmCaracterBotao() { 
     resultado.value = resultado.value.slice(0, -1) || "0";
-
     if (!resultado.value.includes(operador)) {
         operador = "";
     }
@@ -49,172 +48,93 @@ botoes.forEach((botao) => {
             return;
         }
 
-        if (valor == ".") {
+        if (valor === ".") {
             const partes = resultado.value.split(operador || "");
             const ultimaParte = partes[partes.length - 1];
             if (ultimaParte.includes(".")) {
-            return;
+                return;
             }
         }
 
-        if (valor == "=") {
-            if(!operador) {
-                return;
-            }
-
-            if (["√", "!", "sin", "cos", "tan"].includes(operador)) {
-                parte1 = resultado.value.replace(operador, "")
-                if (parte1 == "") {
-                    return;
-                }
-                parte2 = "";
+        if (valor === "=") {
+            resolverExpressao(resultado.value);
+            return;
+        }
+        if (["√", "sin", "cos", "tan"].includes(valor)) {
+            if (resultado.value === "0") {
+                resultado.value = valor;
             } else {
-                const partes = resultado.value.split(operador);
-                parte1 = partes[0];
-                parte2 = partes[1];
-                
-                if (parte1 == "" || parte2 == "") {
-                    return;
-                }       
+                resultado.value = valor + resultado.value;
             }
-            calcular();
             return;
         }
 
         if (operadoresDisponiveis.includes(valor)) {
-            for (let temOperador of operadoresDisponiveis) {
-                if (resultado.value.includes(temOperador)) {
-                    return;
-                }
-            }  
-            
-        operador = valor;
-
-        if (valor == "√") {
+            if (resultado.value === "0" && valor !== "√" && valor !== "sin" && valor !== "cos" && valor !== "tan") {
+                return; // Não permite operadores antes de um número
+            }
             operador = valor;
-        
-            if (resultado.value === "0") {
-                resultado.value = "√";
-            } else {
-                resultado.value = "√" + resultado.value;
-            }
+            resultado.value += valor; // Para aceitar várias operações
             return;
         }
 
-        if (valor == "sin") {
-            operador = "sin";
-            
-            if(resultado.value == "0") {
-                resultado.value = "sin";
-            } else {
-                resultado.value = "sin" + resultado.value; 
-            };
-            return;
-        }
-
-        if (valor == "cos") {
-            operador = "cos";
-        
-            if (resultado.value == "0") {
-                resultado.value = "cos";
-            } else {
-                resultado.value = "cos" + resultado.value;
-            }
-            return;
-        }
-        
-        if (valor == "tan") {
-            operador = "tan";
-        
-            if (resultado.value == "0") {
-                resultado.value = "tan";
-            } else {
-                resultado.value = "tan" + resultado.value;
-            }
-            return;
-        }
-        
-        
-    }
-        if (resultado.value == "0") {
-            resultado.value = valor 
+        if (resultado.value === "0") {  
+            resultado.value = valor;
         } else {
-            resultado.value += valor
+            resultado.value += valor;
         }
-    })
+    });
 });
 
-function calcular() {
-    let resultadoFinal = 0;
-    let numero1 = parseFloat(parte1);
-    let numero2 = parseFloat(parte2);
+function resolverExpressao(expressao) {
+    expressao = expressao.replace(/÷/g, "/");
 
-    switch(operador) {
-        case "+": {
-            resultadoFinal = numero1 + numero2;
-            break;
+    expressao = expressao.replace(/(\d+)!/g, (_, numero) => {
+        return calcularFatorial(Number(numero));
+    });
+
+    expressao = expressao.replace(/(\d+)\^(\d+)/g, (_, base, expoente) => {
+        return Math.pow(Number(base), Number(expoente));
+    });
+
+    expressao = expressao.replace(/√(\d+)/g, (_, numero) => {
+        return Math.sqrt(Number(numero));
+    });
+
+    // Resolver operações trigonométricas
+    expressao = expressao.replace(/(sin|cos|tan)\((\-?\d+(\.\d+)?)\)/g, (_, func, num) => {
+        num = parseFloat(num);
+        if (isNaN(num)) return "ERRO";
+
+        // Converter graus para radianos para funções trigonométricas
+        let rad = num * Math.PI / 180;
+
+        switch (func) {
+            case "sin": return Math.sin(rad);
+            case "cos": return Math.cos(rad);
+            case "tan": return Math.tan(rad);
+            default: return "ERRO";
         }
-        case "-": {
-            resultadoFinal = numero1 - numero2;
-            break;
+    });
+
+    try {
+        // Avalia a expressão completa de forma segura
+        let resultadoFinal = new Function(`return (${expressao})`)();
+        if (isNaN(resultadoFinal) || resultadoFinal === Infinity || resultadoFinal === -Infinity) {
+            resultado.value = "ERRO";
+        } else {
+            resultado.value = parseFloat(resultadoFinal.toFixed(10)).toString(); // Limita pequenas casas decimais
         }
-        case "*": {
-            resultadoFinal = numero1 * numero2;
-            break;
-        }
-        case "÷": {
-            if (numero2 == 0) {
-                resultado.value = "ERRO"
-                operador = "";
-                return;
-            }
-            resultadoFinal = numero1 / numero2;
-            break;
-        }
-        case "%": {
-            resultadoFinal = ((numero1 * numero2) / 100);
-            break;
-        }
-        case "^": {
-            resultadoFinal = numero1 ** numero2;
-            break;
-        }
-        case "√": {
-            if (numero1 < 0) {
-                resultado.value = "ERRO";
-                operador = "";
-                return;
-            }
-            resultadoFinal = Math.sqrt(numero1)  
-            break;
-        }
-        case "!": {
-            if (numero1 < 0 || !Number.isInteger(numero1)) {
-                resultado.value = "ERRO";
-                operador = "";
-                return;
-            }
-            resultadoFinal = calcularFatorial(numero1);
-            break;
-        };
-        case "sin": {
-            resultadoFinal = Math.sin(numero1);
-            break;
-        };
-        case "cos": {
-            resultadoFinal = Math.cos(numero1);
-            break;
-        };
-        case "tan": {
-            resultadoFinal = Math.tan(numero1);
-            break;
-        };
+    } catch (erro) {
+        resultado.value = "ERRO";
     }
-    resultado.value = parseFloat(resultadoFinal.toFixed(5)).toString();
-    operador = '';
-    parte1 = '';
-    parte2 = '';
 }
+
+
+
+
+
+
 
 document.addEventListener("keydown", (evento) => {
     const tecla = evento.key;
@@ -223,13 +143,11 @@ document.addEventListener("keydown", (evento) => {
         if (valorBotao === tecla) {
             botao.click();
             botao.classList.add("pressionado");
-    
             setTimeout(() => {
-                botao.classList.remove("pressionado"); 
+                botao.classList.remove("pressionado");
             }, 150);
         }
     });
-    
 
     const teclasMapeadas = {
         "Enter": ".botaoIgual",
@@ -252,18 +170,18 @@ document.addEventListener("keydown", (evento) => {
     };
 
     if (teclasMapeadas[tecla]) {
-        selecionarTecla(teclasMapeadas[tecla])
-    };
+        selecionarTecla(teclasMapeadas[tecla]);
+    }
 
     function selecionarTecla(classe) {
         const botao = document.querySelector(classe);
         if (botao) {
             botao.click();
-            botao.classList.add("pressionado")
+            botao.classList.add("pressionado");
+            setTimeout(() => {
+                botao.classList.remove("pressionado");
+            }, 150);
+            evento.preventDefault();
         }
-        setTimeout(() => {
-            botao.classList.remove("pressionado"); 
-        }, 150);
-        evento.preventDefault();
     }
 });
