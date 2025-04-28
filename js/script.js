@@ -192,6 +192,8 @@ function calcular() {
     parte2 = '';
 }
 
+
+
 document.addEventListener("keydown", (evento) => {
     const tecla = evento.key;
     botoes.forEach((botao) => {
@@ -205,6 +207,30 @@ document.addEventListener("keydown", (evento) => {
         }, 150);
     });
 
+    const teclasMapeadas = {
+        "Enter": ".botaoIgual",
+        "Backspace": ".botaoApagaUm",
+        "r": ".botaoRaiz",
+        "R": ".botaoRaiz",
+        " ": ".botaoApagaTudo",
+        "p": ".botaoPotencia",
+        "P": ".botaoPotencia",
+        "d": ".botaoDivisao",
+        "D": ".botaoDivisao",
+        "f": ".botaoFatorial",
+        "F": ".botaoFatorial",
+        "s": ".botaoSeno",
+        "S": ".botaoSeno",
+        "c": ".botaoCosseno",
+        "C": ".botaoCosseno",
+        "t": ".botaoTangente",
+        "T": ".botaoTangente"
+    };
+
+    if (teclasMapeadas[tecla]) {
+        selecionarTecla(teclasMapeadas[tecla])
+    };
+
     function selecionarTecla(classe) {
         const botao = document.querySelector(classe);
         if (botao) {
@@ -216,43 +242,6 @@ document.addEventListener("keydown", (evento) => {
         }, 150);
         evento.preventDefault();
     }
-
-    if (tecla == "Enter") {
-        selecionarTecla(".botaoIgual");
-    }
-
-    if (tecla == "Backspace") {
-        selecionarTecla(".botaoApagaUm");
-    }
-
-    if (tecla == "r" || tecla == "R") {
-        selecionarTecla(".botaoRaiz");
-    }
-
-    if (tecla == " ") {
-        selecionarTecla(".botaoApagaTudo");
-    }
-
-    if (tecla == "p" || tecla == "P") {
-        selecionarTecla(".botaoPotencia");
-    }
-
-    if (tecla == "d" || tecla == "D") {
-        selecionarTecla(".botaoDivisao");
-    }
-    if (tecla == "f" || tecla == "F") {
-        selecionarTecla(".botaoFatorial")
-    } 
-    if (tecla == "s" || tecla == "S") {
-        selecionarTecla(".botaoSeno")
-    } 
-    if (tecla == "c" || tecla == "C") {
-        selecionarTecla(".botaoCosseno")
-    } 
-    if (tecla == "t" || tecla == "T") {
-        selecionarTecla(".botaoTangente")
-    } 
-
 });
 
 
