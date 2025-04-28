@@ -3,7 +3,6 @@ const botoes = document.querySelectorAll("button");
 
 let operadoresDisponiveis = ["+","-","*","÷", "%", "^", "√"];
 let operador = "";
-let expressao = "";
 let parte1 = "";
 let parte2 = "";
 
@@ -77,7 +76,7 @@ botoes.forEach((botao) => {
                 if (resultado.value.includes(temOperador)) {
                     return;
                 }
-            }
+            }  
             
         operador = valor;
 
@@ -95,7 +94,7 @@ botoes.forEach((botao) => {
     }
 
         if (resultado.value == "0") {
-            resultado.value = valor
+            resultado.value = valor 
         } else {
             resultado.value += valor
         }
@@ -161,14 +160,24 @@ document.addEventListener("keydown", (evento) => {
 
         if (valorBotao === tecla) {
             botao.click();
+            botao.classList.add("pressionado")
         }
+
+        setTimeout(() => {
+            botao.classList.remove("pressionado"); 
+        }, 150);
     });
 
     function selecionarTecla(classe) {
         const botao = document.querySelector(classe);
         if (botao) {
             botao.click();
+            botao.classList.add("pressionado")
         }
+
+        setTimeout(() => {
+            botao.classList.remove("pressionado"); 
+        }, 150);
     }
 
     if (tecla == "Enter") {

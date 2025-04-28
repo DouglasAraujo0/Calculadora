@@ -75,3 +75,9 @@ button:active {
 .botaoCalculoLaranja {
     background-color: var(--laranja);
 }
+
+.pressionado {
+    background-color: #555555;
+    transform: scale(0.95);
+    transition: background-color 0.1s, transform 0.1s;
+}
