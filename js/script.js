@@ -15,9 +15,6 @@ function resetarBotao() {
 
 function apagarUmCaracterBotao() {
     resultado.value = resultado.value.slice(0, -1) || "0";
-    if (!resultado.value.includes(operador)) {
-        operador = "";
-    }
 }
 
 function calcularFatorial(numero) {
@@ -33,8 +30,7 @@ botoes.forEach((botao) => {
         const valor = botao.textContent;
         const ultimoChar = resultado.value.slice(-1);
 
-        // Permitir número negativo apenas se a tela estiver mostrando "0" ou após um operador
-        if (valor === "-" && (resultado.value === "0" || operadoresDisponiveis.includes(ultimoChar) || ultimoChar === "(")) {
+        if (valor === "-" && (resultado.value === "0" || operadoresDisponiveis.includes(ultimoChar))) {
             resultado.value = resultado.value === "0" ? valor : resultado.value + valor;
             return;
         }
@@ -61,35 +57,32 @@ botoes.forEach((botao) => {
         }
 
         if (["√", "sin", "cos", "tan"].includes(valor)) {
-            if (
-                resultado.value === "0" ||
-                operadoresDisponiveis.includes(ultimoChar) ||
-                ultimoChar === "("
-            ) {
+            if (resultado.value === "0") {
+                resultado.value = valor + "(";
+            } else if (operadoresDisponiveis.includes(ultimoChar)) {
                 resultado.value += valor + "(";
             }
             return;
         }
 
+        // Ajustar lógica de operadores: permitir "!" e "%" seguidos de números
         if (operadoresDisponiveis.includes(valor)) {
-            if (
-                resultado.value === "0" &&
-                !["√", "sin", "cos", "tan"].includes(valor)
-            ) {
+            if (resultado.value === "0" && !["√", "sin", "cos", "tan"].includes(valor)) {
                 return;
             }
 
-            if (operadoresDisponiveis.includes(ultimoChar)) {
+            if (operadoresDisponiveis.includes(ultimoChar) && valor !== "!" && valor !== "%") {
                 resultado.value = resultado.value.slice(0, -1) + valor;
                 operador = valor;
                 return;
             }
 
-            if (ultimoChar === "(" && valor !== "-") {
+            // Permitir a sequência "!" e "%" após um número
+            if (ultimoChar === "!" || ultimoChar === "%") {
+                resultado.value += valor;
                 return;
             }
 
-            operador = valor;
             resultado.value += valor;
             return;
         }
@@ -103,58 +96,83 @@ botoes.forEach((botao) => {
 });
 
 
-
 function corrigirMultiplicacaoAutomatica(expressao) {
-    // Adicionar '*' entre números e parênteses seguidos diretamente por números
     expressao = expressao.replace(/\)(\d+)/g, ') * $1');
     return expressao;
 }
 
 function resolverExpressao(expressao) {
-    // Corrige a multiplicação automática
-    expressao = corrigirMultiplicacaoAutomatica(expressao); 
-
-    // Exibe a expressão corrigida para depuração
-    resultado.value = expressao; // Mostra a expressão corrigida
-
-    // Substitui operadores para cálculos
-    expressao = expressao.replace(/÷/g, "/");
-
-    // Bloquear parênteses mal posicionados
-    if (/\d+\(|\)\d+/.test(expressao)) {
-        resultado.value = "ERRO";
-        return;
+    function formataParenteses(expressao) {
+        const abertura = (expressao.match(/\(/g) || []).length;
+        const fechamento = (expressao.match(/\)/g) || []).length;
+        const faltando = abertura - fechamento;
+        return faltando > 0 ? expressao + ')'.repeat(faltando) : expressao;
     }
 
-    // Fatorial: apenas após número direto (não aceita parênteses ou operadores antes)
-    expressao = expressao.replace(/(?<![()\d])(\d+)!/g, (_, numero) => {
-        return calcularFatorial(Number(numero));
-    });
+    expressao = formataParenteses(expressao);
 
-    // Potência
-    expressao = expressao.replace(/(\d+)\^(\d+)/g, (_, base, expoente) => {
-        return Math.pow(Number(base), Number(expoente));
-    });
+    function tratarPorcentagens(exp) {
+        return exp.replace(/(\d+(\.\d+)?)%/g, (_, num) => `(${num} * 0.01)`);
+    }
 
-    // Raiz quadrada com parênteses obrigatórios
-    expressao = expressao.replace(/√\((\-?\d+(\.\d+)?)\)/g, (_, numero) => {
-        return Math.sqrt(Number(numero));
-    });
+    function corrigirFatorialPorcentagem(exp) {
+        return exp.replace(/(\d+)!%/g, (_, num) => {
+            const fatorial = calcularFatorial(Number(num));
+            if (fatorial === "ERRO") throw "Erro no fatorial";
+            return `(${fatorial} * 0.01)`;
+        });
+    }
 
-    // Seno, cosseno, tangente com parênteses obrigatórios
-    expressao = expressao.replace(/(sin|cos|tan)\((\-?\d+(\.\d+)?)\)/g, (_, func, num) => {
-        num = parseFloat(num);
-        if (isNaN(num)) return "ERRO";
-        switch (func) {
-            case "sin": return Math.sin(num);
-            case "cos": return Math.cos(num);
-            case "tan": return Math.tan(num);
-            default: return "ERRO";
+    function corrigirFatorial(exp) {
+        return exp.replace(/(-?\d+(\.\d+)?)!/g, (_, num) => {
+            const fatorial = calcularFatorial(Number(num));
+            if (fatorial === "ERRO") throw "Erro no fatorial";
+            return fatorial;
+        });
+    }
+
+    expressao = expressao.replace(/√/g, "Math.sqrt");
+    expressao = expressao.replace(/sin/g, "Math.sin");
+    expressao = expressao.replace(/cos/g, "Math.cos");
+    expressao = expressao.replace(/tan/g, "Math.tan");
+
+
+    // Função que resolve a potência da direita para a esquerda corretamente
+    function resolverPotenciasDaDireitaParaEsquerda(exp) {
+        // Resolver potências da direita para a esquerda
+        let partes = exp.split('^');
+        
+        // Verifique se há múltiplas potências e aplique a regra da direita para a esquerda
+        if (partes.length > 1) {
+            let resultado = parseFloat(partes.pop());  // Começa com o último valor
+
+            while (partes.length) {
+                resultado = Math.pow(parseFloat(partes.pop()), resultado);
+            }
+
+            return resultado.toString();
         }
-    });
+        return exp; // Se não houver potências, retorna a expressão original
+    }
+
+    function resolverExpressaoGeral(exp) {
+        // Resolver operações básicas (+, -, *, /, etc)
+        return new Function(`return ${exp}`)();
+    }
 
     try {
-        let resultadoFinal = new Function(`return (${expressao})`)();
+        expressao = tratarPorcentagens(expressao);
+        expressao = corrigirFatorialPorcentagem(expressao);
+        expressao = corrigirMultiplicacaoAutomatica(expressao);
+        expressao = expressao.replace(/÷/g, "/");  // Substituindo divisão
+        expressao = corrigirFatorial(expressao);
+
+        // Primeiro, resolvemos as potências se houver (da direita para a esquerda)
+        expressao = resolverPotenciasDaDireitaParaEsquerda(expressao);
+
+        // Agora, se houver outros operadores, resolvemos normalmente
+        let resultadoFinal = resolverExpressaoGeral(expressao);
+
         if (isNaN(resultadoFinal) || !isFinite(resultadoFinal)) {
             resultado.value = "ERRO";
         } else {
@@ -164,6 +182,18 @@ function resolverExpressao(expressao) {
         resultado.value = "ERRO";
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -191,12 +221,13 @@ document.addEventListener("keydown", (evento) => {
         "f": ".botaoFatorial", "F": ".botaoFatorial",
         "s": ".botaoSeno", "S": ".botaoSeno",
         "c": ".botaoCosseno", "C": ".botaoCosseno",
-        "t": ".botaoTangente", "T": ".botaoTangente"
+        "t": ".botaoTangente", "T": ".botaoTangente",
+        "x": ".botaoVezes", "X": ".botaoVezes",
     };
 
     if (teclasMapeadas[tecla]) {
         selecionarTecla(teclasMapeadas[tecla]);
-    }
+    }   
 
     function selecionarTecla(classe) {
         const botao = document.querySelector(classe);
