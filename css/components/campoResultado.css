@@ -1,8 +1,11 @@
 .resultado {
     text-align: right;
     padding: 20px;
-    width: 41vh;
+    width: 100%;
+    min-width: 250px; 
+    max-width: 350px; 
     color: #FFF;
     font-size: 50px;
     background-color: #464646;
+    box-sizing: border-box;
 }
