@@ -59,11 +59,15 @@ botoes.forEach((botao) => {
         if (["√", "sin", "cos", "tan"].includes(valor)) {
             if (resultado.value === "0") {
                 resultado.value = valor + "(";
-            } else if (operadoresDisponiveis.includes(ultimoChar)) {
+            } else if (operadoresDisponiveis.includes(ultimoChar) || ultimoChar === "(") {
                 resultado.value += valor + "(";
+            } else {
+                resultado.value += "*" + valor + "(";
             }
             return;
         }
+        
+        
 
         if (operadoresDisponiveis.includes(valor)) {
             if (resultado.value === "0" && !["√", "sin", "cos", "tan"].includes(valor)) {
