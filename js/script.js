@@ -65,7 +65,6 @@ botoes.forEach((botao) => {
             return;
         }
 
-        // Ajustar lógica de operadores: permitir "!" e "%" seguidos de números
         if (operadoresDisponiveis.includes(valor)) {
             if (resultado.value === "0" && !["√", "sin", "cos", "tan"].includes(valor)) {
                 return;
@@ -77,7 +76,6 @@ botoes.forEach((botao) => {
                 return;
             }
 
-            // Permitir a sequência "!" e "%" após um número
             if (ultimoChar === "!" || ultimoChar === "%") {
                 resultado.value += valor;
                 return;
@@ -115,14 +113,6 @@ function resolverExpressao(expressao) {
         return exp.replace(/(\d+(\.\d+)?)%/g, (_, num) => `(${num} * 0.01)`);
     }
 
-    function corrigirFatorialPorcentagem(exp) {
-        return exp.replace(/(\d+)!%/g, (_, num) => {
-            const fatorial = calcularFatorial(Number(num));
-            if (fatorial === "ERRO") throw "Erro no fatorial";
-            return `(${fatorial} * 0.01)`;
-        });
-    }
-
     function corrigirFatorial(exp) {
         return exp.replace(/(-?\d+(\.\d+)?)!/g, (_, num) => {
             const fatorial = calcularFatorial(Number(num));
@@ -136,41 +126,28 @@ function resolverExpressao(expressao) {
     expressao = expressao.replace(/cos/g, "Math.cos");
     expressao = expressao.replace(/tan/g, "Math.tan");
 
+    function resolverPotencias(exp) {
+        exp = exp.replace(/\^/g, '**');
+        return exp;
+    }
 
-    // Função que resolve a potência da direita para a esquerda corretamente
-    function resolverPotenciasDaDireitaParaEsquerda(exp) {
-        // Resolver potências da direita para a esquerda
-        let partes = exp.split('^');
-        
-        // Verifique se há múltiplas potências e aplique a regra da direita para a esquerda
-        if (partes.length > 1) {
-            let resultado = parseFloat(partes.pop());  // Começa com o último valor
-
-            while (partes.length) {
-                resultado = Math.pow(parseFloat(partes.pop()), resultado);
-            }
-
-            return resultado.toString();
-        }
-        return exp; // Se não houver potências, retorna a expressão original
+    function resolverRaizQuadrada(exp) {
+        return exp.replace(/√(\d+(\.\d+)?)/g, (_, num) => {
+            return Math.sqrt(parseFloat(num)).toString();
+        });
     }
 
     function resolverExpressaoGeral(exp) {
-        // Resolver operações básicas (+, -, *, /, etc)
         return new Function(`return ${exp}`)();
     }
 
     try {
+        expressao = resolverRaizQuadrada(expressao);
+        expressao = resolverPotencias(expressao);
         expressao = tratarPorcentagens(expressao);
-        expressao = corrigirFatorialPorcentagem(expressao);
-        expressao = corrigirMultiplicacaoAutomatica(expressao);
-        expressao = expressao.replace(/÷/g, "/");  // Substituindo divisão
         expressao = corrigirFatorial(expressao);
-
-        // Primeiro, resolvemos as potências se houver (da direita para a esquerda)
-        expressao = resolverPotenciasDaDireitaParaEsquerda(expressao);
-
-        // Agora, se houver outros operadores, resolvemos normalmente
+        expressao = expressao.replace(/÷/g, "/");
+        
         let resultadoFinal = resolverExpressaoGeral(expressao);
 
         if (isNaN(resultadoFinal) || !isFinite(resultadoFinal)) {
@@ -178,25 +155,10 @@ function resolverExpressao(expressao) {
         } else {
             resultado.value = parseFloat(resultadoFinal.toFixed(10)).toString();
         }
-    } catch {
+    } catch (e) {
         resultado.value = "ERRO";
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 document.addEventListener("keydown", (evento) => {
     const tecla = evento.key;
