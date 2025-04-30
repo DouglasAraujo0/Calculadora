@@ -1,0 +1,56 @@
+
+.botoes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+}
+
+.botoes button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 100%;
+    color: #FFFFFF;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}   
+.labelBotaoResultado {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+.botaoIgual {
+    grid-column: span 2;
+}
+
+.botaoCinza {
+    background-color: var(--cinza);
+}
+
+.botaoCinzaClaro {
+    background-color: var(--cinzaClaro);
+}
+
+button:active {
+    opacity: .8;
+}
+
+.botaoCalculoLaranja {
+    background-color: var(--laranja);
+}
+
+.pressionado {
+    background-color: #555555;
+    transform: scale(0.95);
+    transition: background-color 0.1s, transform 0.1s;
+}

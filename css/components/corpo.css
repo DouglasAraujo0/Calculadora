@@ -1,0 +1,20 @@
+html, body {
+    height: 100%;
+    min-width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+body {
+    background-color: #F7F7F7;
+}
+
+.containerCalculadora {
+    background-color: #333;
+    border-radius: 5px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Ajuste aqui para uma sombra mais suave */
+    margin: 40px auto;
+}
