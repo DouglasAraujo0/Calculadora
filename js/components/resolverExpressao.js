@@ -9,8 +9,27 @@ export function resolverExpressao(expressao, resultado) {
     }
 
     function tratarPorcentagens(exp) {
-        return exp.replace(/(\d+(\.\d+)?)%/g, (_, num) => `(${num} * 0.01)`);
+        // 1. número operador número%
+        exp = exp.replace(/(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)%/g, (_, num1, _1, op, num2) => {
+            return `${num1}${op}(${num1} * ${num2} / 100)`;
+        });
+    
+        // 2. número% seguido de algo
+        exp = exp.replace(/(\d+(\.\d+)?)%(\d+(\.\d+)?|\([^()]*\)|[a-zA-Z]+)/g, (_, num1, _1, num2) => {
+            return `(${num1} * 0.01) * ${num2}`;
+        });
+    
+        // 3. número% isolado
+        exp = exp.replace(/(\d+(\.\d+)?)%/g, (_, num) => {
+            return `(${num} * 0.01)`;
+        });
+    
+        return exp;
     }
+    
+    
+    
+    
 
     function corrigirFatorial(exp) {
         return exp.replace(/(-?\d+(\.\d+)?)!/g, (_, num) => {
@@ -36,10 +55,10 @@ export function resolverExpressao(expressao, resultado) {
 
     try {
         expressao = formataParenteses(expressao);
-        expressao = resolverRaizQuadrada(expressao);
-        expressao = resolverPotencias(expressao);
         expressao = tratarPorcentagens(expressao);
         expressao = corrigirFatorial(expressao);
+        expressao = resolverRaizQuadrada(expressao);
+        expressao = resolverPotencias(expressao);
 
         expressao = expressao.replace(/÷/g, "/")
                              .replace(/sin/g, "Math.sin")

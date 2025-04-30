@@ -1,79 +1,74 @@
-import { calcularFatorial, resetarBotao, apagarUmCaracterBotao } from "./utilitarios.js";
+import { resetarBotao, apagarUmCaracterBotao } from "./utilitarios.js";
 import { resolverExpressao } from "./resolverExpressao.js";
 
 export function configurarBotoes() {
     const resultado = document.getElementById("idResultado");
     const botoes = document.querySelectorAll("button");
 
-    let operadoresDisponiveis = ["+", "-", "*", "÷", "%", "^", "√", "!", "sin", "cos", "tan"];
-    let operador = "";
+    const operadoresDisponiveis = ["+", "-", "*", "÷", "%", "^", "√", "!", "sin", "cos", "tan"];
+    const funcoesEspeciais = ["√", "sin", "cos", "tan"];
 
     botoes.forEach((botao) => {
         botao.addEventListener("click", () => {
             const valor = botao.textContent;
             const ultimoChar = resultado.value.slice(-1);
+            const valorInicialZero = resultado.value === "0";
+            const ultimoEhOperador = operadoresDisponiveis.includes(ultimoChar);
 
-            if (valor === "-" && (resultado.value === "0" || operadoresDisponiveis.includes(ultimoChar))) {
-                resultado.value = resultado.value === "0" ? valor : resultado.value + valor;
+            if (valor === "-" && /-+$/.test(resultado.value)) {
+                return;
+            }
+            
+
+            if (valor === "-" && (valorInicialZero || ultimoEhOperador)) {
+                resultado.value = valorInicialZero ? valor : resultado.value + valor;
                 return;
             }
 
-            if (valor === "C") {
-                resetarBotao();
-                return;
-            }
-
-            if (valor === "CE") {
-                apagarUmCaracterBotao();
-                return;
-            }
-
-            if (valor === ".") {
-                const partes = resultado.value.split(/[\+\-\*÷\^%]/);
-                const ultimaParte = partes[partes.length - 1];
-                if (ultimaParte.includes(".")) return;
-            }
-
-            if (valor === "=") {
-                resolverExpressao(resultado.value, resultado);
-                return;
-            }
-
-            if (["√", "sin", "cos", "tan"].includes(valor)) {
-                if (resultado.value === "0") {
-                    resultado.value = valor + "(";
-                } else if (operadoresDisponiveis.includes(ultimoChar) || ultimoChar === "(") {
-                    resultado.value += valor + "(";
-                } else {
-                    resultado.value += "*" + valor + "(";
-                }
-                return;
-            }
-
-            if (operadoresDisponiveis.includes(valor)) {
-                if (resultado.value === "0" && !["√", "sin", "cos", "tan"].includes(valor)) {
+            switch (valor) {
+                case "C":
+                    resetarBotao();
                     return;
-                }
-
-                if (operadoresDisponiveis.includes(ultimoChar) && valor !== "!" && valor !== "%") {
-                    resultado.value = resultado.value.slice(0, -1) + valor;
-                    operador = valor;
+                case "CE":
+                    apagarUmCaracterBotao();
                     return;
-                }
-
-                if (ultimoChar === "!" || ultimoChar === "%") {
-                    resultado.value += valor;
+                case "=":
+                    resolverExpressao(resultado.value, resultado);
                     return;
-                }
+                case ".":
+                    const partes = resultado.value.split(/[\+\-\*÷\^%]/);
+                    const ultimaParte = partes[partes.length - 1];
+                    if (ultimaParte.includes(".")) return;
+                    break;
+                default:
+                    if (funcoesEspeciais.includes(valor)) {
+                        if (valorInicialZero) {
+                            resultado.value = valor + "(";
+                        } else if (ultimoEhOperador || ultimoChar === "(") {
+                            resultado.value += valor + "(";
+                        } else {
+                            resultado.value += "*" + valor + "(";
+                        }
+                        return;
+                    }
 
-                resultado.value += valor;
-                return;
-            }
+                    if (operadoresDisponiveis.includes(valor)) {
+                        if (valorInicialZero && !funcoesEspeciais.includes(valor)) return;
 
-            if (resultado.value === "0") {
-                resultado.value = valor;
-            } else {
-                resultado.value += valor;
+                        if (ultimoEhOperador && valor !== "!" && valor !== "%") {
+                            resultado.value = resultado.value.slice(0, -1) + valor;
+                            return;
+                        }
+
+                        if (ultimoChar === "!" || ultimoChar === "%") {
+                            resultado.value += valor;
+                            return;
+                        }
+
+                        resultado.value += valor;
+                        return;
+                    }
+                    resultado.value = valorInicialZero ? valor : resultado.value + valor;
             }
         });
     });

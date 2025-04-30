@@ -4,51 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Uma calculadora simples e funcional, com várias operações matemáticas como soma, subtração, multiplicação, divisão e muito mais. Perfeita para uso diário.">
-
-    <title>Calculadora</title>
+    <title>Calculadora Científica</title>
     <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-    <label for="idResultado" class="labelBotaoResultado">Resultado da Calculadora</label>
+    <label for="idResultado" class="labelBotaoResultado">Resultado da Calculadora Científica</label>
     <div class="containerCalculadora">
         <input type="text" value="0" class="resultado" id="idResultado" disabled>
         <div class="botoes">
             <button class="botaoCinza botaoApagaTudo">C</button>
             <button class="botaoCinza botaoApagaUm">CE</button>
-            <button class="botaoCalculoLaranja">%</button>
+            <button class="botaoCalculoLaranja botaoParenteses">(</button>
+            <button class="botaoCalculoLaranja botaoParenteses">)</button>
             <button class="botaoCalculoLaranja botaoDivisao">÷</button>
-            
+            <button class="botaoCalculoLaranja botaoPotencia">^</button>
+
             <button class="botaoCinzaClaro">7</button>
             <button class="botaoCinzaClaro">8</button>
             <button class="botaoCinzaClaro">9</button>
-            <button class="botaoCalculoLaranja botaoVezes">*</button>
             
+            <button class="botaoCalculoLaranja botaoVezes">*</button>
+            <button class="botaoCalculoLaranja botaoRaiz">√</button>
+            <button class="botaoCalculoLaranja">-</button>
+
             <button class="botaoCinzaClaro">4</button>
             <button class="botaoCinzaClaro">5</button>
             <button class="botaoCinzaClaro">6</button>
-            <button class="botaoCalculoLaranja">-</button>
-            
-        
+
+            <button class="botaoCalculoLaranja">%</button>
+            <button class="botaoCalculoLaranja botaoFatorial">!</button>
+            <button class="botaoCalculoLaranja">+</button>
+
             <button class="botaoCinzaClaro">1</button>
             <button class="botaoCinzaClaro">2</button>
             <button class="botaoCinzaClaro">3</button>
-            <button class="botaoCalculoLaranja">+</button>
-        
-            <button class="botaoCinzaClaro">0</button>
-            <button class="botaoCinzaClaro">.</button>
-            <button class="botaoCalculoLaranja botaoPotencia">^</button>
-            <button class="botaoCalculoLaranja botaoRaiz">√</button>
-            <button class="botaoCalculoLaranja botaoFatorial">!</button>
+
             <button class="botaoCalculoLaranja botaoSeno">sin</button>
             <button class="botaoCalculoLaranja botaoCosseno">cos</button>
             <button class="botaoCalculoLaranja botaoTangente">tan</button>
-            <button class="botaoCalculoLaranja botaoParenteses">(</button>
-            <button class="botaoCalculoLaranja botaoParenteses">)</button>
-            <button class="botaoCalculoLaranja botaoIgual">=</button>
+        
+            <button class="botaoCinzaClaro">0</button>
+            <button class="botaoCinzaClaro botaoPonto">.</button>
+            <button class="botaoIgual">=</button>
             </div>
     </div>
     <script type="module" src="/js/script.js"></script>
 </body>
-
-
 </html>
