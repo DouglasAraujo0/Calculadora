@@ -27,10 +27,6 @@ export function resolverExpressao(expressao, resultado) {
         return exp;
     }
     
-    
-    
-    
-
     function corrigirFatorial(exp) {
         return exp.replace(/(-?\d+(\.\d+)?)!/g, (_, num) => {
             const fatorial = calcularFatorial(Number(num));
@@ -53,13 +49,29 @@ export function resolverExpressao(expressao, resultado) {
         return new Function(`return ${exp}`)();
     }
 
+    function tratarMultiplicacaoImplicita(exp) {
+        // número ou parêntese fechado seguido de parêntese de abertura e insere multiplicação
+        exp = exp.replace(/(\d+(\.\d+)?|\))(\()/g, (_, num) => {
+            return `${num}*(`;
+        });
+    
+        // multiplicação entre parênteses seguidos de número
+        exp = exp.replace(/\)(\d+(\.\d+)?)/g, (_, num) => {
+            return `)*${num}`;
+        });
+    
+        return exp;
+    }
+    
+    
+
     try {
         expressao = formataParenteses(expressao);
         expressao = tratarPorcentagens(expressao);
         expressao = corrigirFatorial(expressao);
         expressao = resolverRaizQuadrada(expressao);
         expressao = resolverPotencias(expressao);
-
+        expressao = tratarMultiplicacaoImplicita(expressao);
         expressao = expressao.replace(/÷/g, "/")
                              .replace(/sin/g, "Math.sin")
                              .replace(/cos/g, "Math.cos")
